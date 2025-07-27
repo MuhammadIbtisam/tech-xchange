@@ -15,6 +15,9 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/categories', require('./routes/categories'));
+app.use('/api/brands', require('./routes/brands'));
+app.use('/api/product-types', require('./routes/productTypes'));
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
