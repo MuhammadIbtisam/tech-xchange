@@ -285,6 +285,21 @@ exports.changePassword = async (req, res) => {
   }
 };
 
+exports.logout = async (req, res) => {
+  try {
+    res.json({ 
+      success: true,
+      message: 'Logged out successfully' 
+    });
+  } catch (err) {
+    console.error('Logout error:', err);
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error during logout' 
+    });
+  }
+};
+
 // Get user statistics (for sellers)
 exports.getUserStats = async (req, res) => {
   try {
