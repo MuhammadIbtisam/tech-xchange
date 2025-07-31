@@ -1,7 +1,7 @@
 const Product = require('../models/Product');
 const ProductType = require('../models/ProductType');
 
-// Get all approved products (public - for buyers)
+
 exports.getAllProducts = async (req, res) => {
   try {
     const {
@@ -131,7 +131,7 @@ exports.createProduct = async (req, res) => {
       tags
     } = req.body;
 
-    // Validate required fields
+
     if (!productTypeId || !price || !condition) {
       return res.status(400).json({
         success: false,

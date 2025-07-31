@@ -1,6 +1,6 @@
 const ProductType = require('../models/ProductType');
 
-// Get all product types (public)
+
 exports.getAllProductTypes = async (req, res) => {
   try {
     const productTypes = await ProductType.find({ isActive: true })

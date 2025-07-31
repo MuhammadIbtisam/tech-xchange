@@ -1,6 +1,6 @@
 const Category = require('../models/Category');
 
-// Get all categories (public)
+
 exports.getAllCategories = async (req, res) => {
   try {
     const categories = await Category.find({ isActive: true })

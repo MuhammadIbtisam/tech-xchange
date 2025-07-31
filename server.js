@@ -9,6 +9,9 @@ const app = express();
 // Middleware to parse JSON
 app.use(express.json());
 
+// Serve static files from uploads directory
+app.use('/uploads', express.static('uploads'));
+
 // Simple route for testing
 app.get('/', (req, res) => {
   res.send('API is running...');
@@ -19,6 +22,10 @@ app.use('/api/categories', require('./routes/categories'));
 app.use('/api/brands', require('./routes/brands'));
 app.use('/api/product-types', require('./routes/productTypes'));
 app.use('/api/products', require('./routes/products'));
+app.use('/api/reviews', require('./routes/reviews'));
+app.use('/api/orders', require('./routes/orders'));
+app.use('/api/saved-items', require('./routes/savedItems'));
+app.use('/api/notifications', require('./routes/notifications'));
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {

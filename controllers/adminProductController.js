@@ -193,7 +193,7 @@ exports.getDashboardStats = async (req, res) => {
   }
 };
 
-// Get all products for admin (admin only)
+
 exports.getAllProductsForAdmin = async (req, res) => {
   try {
     const {

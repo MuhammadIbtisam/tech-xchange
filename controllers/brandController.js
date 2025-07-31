@@ -1,6 +1,6 @@
 const Brand = require('../models/Brand');
 
-// Get all brands (public)
+
 exports.getAllBrands = async (req, res) => {
   try {
     const brands = await Brand.find({ isActive: true })
