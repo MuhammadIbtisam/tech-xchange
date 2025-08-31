@@ -6,9 +6,61 @@ const Notification = require('../models/Notification');
 
 exports.createOrder = async (req, res) => {
   try {
+    console.log('🛒 === ORDER CREATION DEBUG ===');
+    console.log('🔍 Full request body:', req.body);
+    console.log('🔍 Request headers:', req.headers);
+    console.log('🔍 Content-Type:', req.headers['content-type']);
+    console.log('🔍 req.user:', req.user);
+    console.log('🔍 req.user.userId:', req.user?.userId);
+    console.log('🔍 req.user.id:', req.user?.id);
+    console.log('🔍 === END DEBUG ===');
+
     const { productId } = req.params;
     const { quantity = 1, paymentMethod, shippingAddress, shippingMethod = 'standard', notes } = req.body;
-    const buyerId = req.user.id;
+    
+    // Extract buyerId from JWT token (not from request body for security)
+    const buyerId = req.user.userId || req.user.id;
+    
+    if (!buyerId) {
+      return res.status(401).json({
+        success: false,
+        message: 'User ID not found in token'
+      });
+    }
+
+    // Validate required fields
+    if (!paymentMethod) {
+      return res.status(400).json({
+        success: false,
+        message: 'Payment method is required'
+      });
+    }
+
+    if (!shippingAddress) {
+      return res.status(400).json({
+        success: false,
+        message: 'Shipping address is required'
+      });
+    }
+
+    // Validate shipping address fields
+    const requiredAddressFields = ['street', 'city', 'state', 'zipCode', 'country', 'phone'];
+    for (const field of requiredAddressFields) {
+      if (!shippingAddress[field]) {
+        return res.status(400).json({
+          success: false,
+          message: `Shipping address ${field} is required`
+        });
+      }
+    }
+
+    // Validate quantity
+    if (quantity < 1) {
+      return res.status(400).json({
+        success: false,
+        message: 'Quantity must be at least 1'
+      });
+    }
 
     // Validate product exists and is approved
     const product = await Product.findById(productId).populate('sellerId', 'fullName');
@@ -69,12 +121,12 @@ exports.createOrder = async (req, res) => {
       userId: product.sellerId._id,
       type: 'order_created',
       title: 'New Order Received',
-      message: `You have received a new order for ${product.productTypeId.name}`,
+      message: `You have received a new order for ${product.productTypeId?.name || 'Product'}`,
       relatedId: order._id,
       relatedModel: 'Order',
       metadata: {
         orderId: order._id,
-        productName: product.productTypeId.name,
+        productName: product.productTypeId?.name || 'Product',
         quantity,
         totalAmount
       }
@@ -105,7 +157,7 @@ exports.createOrder = async (req, res) => {
 // Get buyer's orders
 exports.getBuyerOrders = async (req, res) => {
   try {
-    const buyerId = req.user.id;
+    const buyerId = req.user.userId || req.user.id;
     const { page = 1, limit = 10, status } = req.query;
 
     const query = { buyerId };
@@ -150,7 +202,7 @@ exports.getBuyerOrders = async (req, res) => {
 // Get seller's orders
 exports.getSellerOrders = async (req, res) => {
   try {
-    const sellerId = req.user.id;
+    const sellerId = req.user.userId || req.user.id;
     const { page = 1, limit = 10, status } = req.query;
 
     const query = { sellerId };
@@ -196,7 +248,7 @@ exports.getSellerOrders = async (req, res) => {
 exports.getOrder = async (req, res) => {
   try {
     const { orderId } = req.params;
-    const userId = req.user.id;
+    const userId = req.user.userId || req.user.id;
 
     const order = await Order.findById(orderId)
       .populate('productId', 'productTypeId')
@@ -238,7 +290,7 @@ exports.updateOrderStatus = async (req, res) => {
   try {
     const { orderId } = req.params;
     const { status, trackingNumber, estimatedDelivery } = req.body;
-    const sellerId = req.user.id;
+    const sellerId = req.user.userId || req.user.id;
 
     const order = await Order.findById(orderId);
     if (!order) {
@@ -328,7 +380,7 @@ exports.cancelOrder = async (req, res) => {
   try {
     const { orderId } = req.params;
     const { reason } = req.body;
-    const buyerId = req.user.id;
+    const buyerId = req.user.userId || req.user.id;
 
     const order = await Order.findById(orderId);
     if (!order) {
