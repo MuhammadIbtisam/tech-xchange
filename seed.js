@@ -210,13 +210,36 @@ async function seed() {
     const sellerUsers = users.filter(u => u.role === 'seller');
     const buyerUsers = users.filter(u => u.role === 'buyer');
 
-    // Insert categories
+    // Insert categories with specific IDs
     console.log('Creating categories...');
-    const insertedCategories = await Category.insertMany(categories);
+    const categoriesWithIds = categories.map((cat, index) => ({
+      ...cat,
+      _id: [
+        '68b5ef05f6d5de9e5f963ad2', // laptops
+        '68b5ef05f6d5de9e5f963ad3', // phones  
+        '68b5ef05f6d5de9e5f963ad4', // tablets
+        '68b5ef05f6d5de9e5f963ad5', // accessories
+        '68b5ef05f6d5de9e5f963ad6', // gaming
+        '68b5ef05f6d5de9e5f963ad7'  // audio
+      ][index]
+    }));
+    const insertedCategories = await Category.insertMany(categoriesWithIds);
 
-    // Insert brands
+    // Insert brands with specific IDs
     console.log('Creating brands...');
-    const insertedBrands = await Brand.insertMany(brands);
+    const brandsWithIds = brands.map((brand, index) => ({
+      ...brand,
+      _id: [
+        '68b5ef05f6d5de9e5f963ad9', // Apple
+        '68b5ef05f6d5de9e5f963ada', // Samsung
+        '68b5ef05f6d5de9e5f963adb', // Lenovo
+        '68b5ef05f6d5de9e5f963adc', // Dell
+        '68b5ef05f6d5de9e5f963add', // HP
+        '68b5ef05f6d5de9e5f963ade', // Sony
+        '68b5ef05f6d5de9e5f963adf'  // Microsoft
+      ][index]
+    }));
+    const insertedBrands = await Brand.insertMany(brandsWithIds);
 
     // Create product types
     console.log('Creating product types...');
@@ -237,11 +260,12 @@ async function seed() {
         specifications: { screen: '6.7"', ram: '8GB', storage: '512GB', camera: '48MP Pro' }
       },
       {
-        name: 'MacBook Pro 16"',
+        _id: '68b5ef05f6d5de9e5f963ae3', // Specific ID for frontend compatibility
+        name: 'Professional Laptop',
         brandId: insertedBrands.find(b => b.name === 'Apple')._id,
         categoryId: insertedCategories.find(c => c.name === 'laptops')._id,
-        description: 'Professional laptop with M3 Max chip',
-        specifications: { screen: '16"', ram: '32GB', storage: '1TB', processor: 'M3 Max' }
+        description: 'High-performance laptop for professionals and creators',
+        specifications: { screen: '15-16"', ram: '16-32GB', storage: '512GB-1TB', processor: 'High-end' }
       },
       {
         name: 'MacBook Air 15"',
@@ -392,6 +416,7 @@ async function seed() {
       const randomImages = categoryImages.sort(() => 0.5 - Math.random()).slice(0, Math.min(3, categoryImages.length));
       
       const product = {
+        name: productType.name, // Add the required name field
         sellerId: seller._id,
         productTypeId: productType._id,
         price: Math.floor(Math.random() * 1500) + 150, // Random price between £150-£1650
@@ -525,22 +550,22 @@ async function seed() {
 
     await Notification.insertMany(notifications);
 
-    console.log('✅ Seeding completed successfully!');
-    console.log(`📊 Created ${users.length} users`);
-    console.log(`📁 Created ${insertedCategories.length} categories`);
-    console.log(`🏷️ Created ${insertedBrands.length} brands`);
-    console.log(`🔧 Created ${insertedProductTypes.length} product types`);
-    console.log(`📦 Created ${insertedProducts.length} products`);
-    console.log(`⭐ Created ${reviews.length} reviews`);
-    console.log(`📋 Created ${orders.length} orders`);
-    console.log(`❤️ Created ${savedItems.length} saved items`);
-    console.log(`🔔 Created ${notifications.length} notifications`);
+    console.log('Seeding completed successfully!');
+    console.log(`Created ${users.length} users`);
+    console.log(`Created ${insertedCategories.length} categories`);
+    console.log(`Created ${insertedBrands.length} brands`);
+    console.log(`Created ${insertedProductTypes.length} product types`);
+    console.log(`Created ${insertedProducts.length} products`);
+    console.log(`Created ${reviews.length} reviews`);
+    console.log(`Created ${orders.length} orders`);
+    console.log(`Created ${savedItems.length} saved items`);
+    console.log(`Created ${notifications.length} notifications`);
 
     await mongoose.disconnect();
     console.log('Disconnected from MongoDB');
     
   } catch (err) {
-    console.error('❌ Seeding error:', err);
+    console.error('Seeding error:', err);
     await mongoose.disconnect();
     process.exit(1);
   }

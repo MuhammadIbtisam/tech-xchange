@@ -7,13 +7,13 @@ const Notification = require('../models/Notification');
 exports.createOrder = async (req, res) => {
   try {
     console.log('🛒 === ORDER CREATION DEBUG ===');
-    console.log('🔍 Full request body:', req.body);
-    console.log('🔍 Request headers:', req.headers);
-    console.log('🔍 Content-Type:', req.headers['content-type']);
-    console.log('🔍 req.user:', req.user);
-    console.log('🔍 req.user.userId:', req.user?.userId);
-    console.log('🔍 req.user.id:', req.user?.id);
-    console.log('🔍 === END DEBUG ===');
+    console.log('Full request body:', req.body);
+    console.log('Request headers:', req.headers);
+    console.log('Content-Type:', req.headers['content-type']);
+    console.log('req.user:', req.user);
+    console.log('req.user.userId:', req.user?.userId);
+    console.log('req.user.id:', req.user?.id);
+    console.log('=== END DEBUG ===');
 
     const { productId } = req.params;
     const { quantity = 1, paymentMethod, shippingAddress, shippingMethod = 'standard', notes } = req.body;
@@ -147,9 +147,37 @@ exports.createOrder = async (req, res) => {
     });
   } catch (err) {
     console.error('Create order error:', err);
+    
+    // Handle specific validation errors
+    if (err.name === 'ValidationError') {
+      const errors = Object.values(err.errors).map(e => e.message);
+      return res.status(400).json({
+        success: false,
+        message: 'Validation error',
+        errors: errors
+      });
+    }
+    
+    // Handle duplicate key errors
+    if (err.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: 'Duplicate order detected'
+      });
+    }
+    
+    // Handle cast errors (invalid ObjectId)
+    if (err.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid ID format'
+      });
+    }
+    
     res.status(500).json({
       success: false,
-      message: 'Error creating order'
+      message: 'Error creating order',
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
   }
 };
@@ -292,6 +320,13 @@ exports.updateOrderStatus = async (req, res) => {
     const { status, trackingNumber, estimatedDelivery } = req.body;
     const sellerId = req.user.userId || req.user.id;
 
+    console.log('=== ORDER STATUS UPDATE DEBUG ===');
+    console.log('Order ID:', orderId);
+    console.log('New Status:', status);
+    console.log('Tracking Number:', trackingNumber);
+    console.log('Estimated Delivery:', estimatedDelivery);
+    console.log('Seller ID:', sellerId);
+
     const order = await Order.findById(orderId);
     if (!order) {
       return res.status(404).json({
@@ -299,6 +334,9 @@ exports.updateOrderStatus = async (req, res) => {
         message: 'Order not found'
       });
     }
+
+    console.log('Current Order Status:', order.status);
+    console.log('Order Seller ID:', order.sellerId);
 
     if (order.sellerId.toString() !== sellerId) {
       return res.status(403).json({
@@ -311,31 +349,47 @@ exports.updateOrderStatus = async (req, res) => {
     const validTransitions = {
       pending: ['confirmed', 'cancelled'],
       confirmed: ['shipped', 'cancelled'],
-      shipped: ['delivered'],
-      delivered: [],
+      shipped: ['delivered', 'cancelled'],
+      delivered: ['refunded'],
       cancelled: [],
       refunded: []
     };
 
-    if (!validTransitions[order.status].includes(status)) {
+    console.log('Valid transitions for current status:', validTransitions[order.status]);
+
+    // Check if current status has valid transitions
+    if (!validTransitions[order.status]) {
       return res.status(400).json({
         success: false,
-        message: `Cannot change status from ${order.status} to ${status}`
+        message: `Invalid current order status: ${order.status}`
       });
     }
 
+    // Check if the new status is a valid transition
+    if (!validTransitions[order.status].includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot change status from ${order.status} to ${status}. Valid transitions are: ${validTransitions[order.status].join(', ')}`
+      });
+    }
+
+    console.log('Status transition is valid');
+
+    // Update order status
     order.status = status;
     if (trackingNumber) order.trackingNumber = trackingNumber;
     if (estimatedDelivery) order.estimatedDelivery = estimatedDelivery;
 
     await order.save();
+    console.log('Order saved with new status:', order.status);
 
     // Create notification for buyer
     const notificationTypes = {
       confirmed: 'order_confirmed',
       shipped: 'order_shipped',
       delivered: 'order_delivered',
-      cancelled: 'order_cancelled'
+      cancelled: 'order_cancelled',
+      refunded: 'order_refunded'
     };
 
     if (notificationTypes[status]) {
@@ -353,6 +407,7 @@ exports.updateOrderStatus = async (req, res) => {
         }
       });
       await notification.save();
+      console.log('Notification created for buyer');
     }
 
     await order.populate([
@@ -360,6 +415,8 @@ exports.updateOrderStatus = async (req, res) => {
       { path: 'sellerId', select: 'fullName' },
       { path: 'buyerId', select: 'fullName' }
     ]);
+
+    console.log('Order populated and ready to return');
 
     res.json({
       success: true,

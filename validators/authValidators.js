@@ -65,37 +65,56 @@ const validateProfileUpdate = [
   body('fullName')
     .optional()
     .isLength({ min: 2, max: 50 })
-    .withMessage('Full name must be between 2 and 50 characters'),
+    .withMessage('Full name must be between 2 and 50 characters')
+    .trim()
+    .escape(),
+  
+  body('email')
+    .optional()
+    .isEmail()
+    .withMessage('Valid email is required')
+    .normalizeEmail()
+    .trim(),
   
   body('phoneNumber')
     .optional()
     .isMobilePhone()
-    .withMessage('Valid phone number is required'),
+    .withMessage('Valid phone number is required')
+    .trim(),
   
   body('address.street')
     .optional()
     .isLength({ min: 5, max: 100 })
-    .withMessage('Street address must be between 5 and 100 characters'),
+    .withMessage('Street address must be between 5 and 100 characters')
+    .trim()
+    .escape(),
   
   body('address.city')
     .optional()
     .isLength({ min: 2, max: 50 })
-    .withMessage('City must be between 2 and 50 characters'),
+    .withMessage('City must be between 2 and 50 characters')
+    .trim()
+    .escape(),
   
   body('address.state')
     .optional()
     .isLength({ min: 2, max: 50 })
-    .withMessage('State must be between 2 and 50 characters'),
+    .withMessage('State must be between 2 and 50 characters')
+    .trim()
+    .escape(),
   
   body('address.zipCode')
     .optional()
     .isPostalCode('any')
-    .withMessage('Valid zip code is required'),
+    .withMessage('Valid zip code is required')
+    .trim(),
   
   body('address.country')
     .optional()
     .isLength({ min: 2, max: 50 })
-    .withMessage('Country must be between 2 and 50 characters'),
+    .withMessage('Country must be between 2 and 50 characters')
+    .trim()
+    .escape(),
   
   (req, res, next) => {
     const errors = validationResult(req);

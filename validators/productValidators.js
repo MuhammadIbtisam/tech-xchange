@@ -2,6 +2,20 @@ const { body, param, validationResult } = require('express-validator');
 
 // Validation rules for creating a product
 exports.validateCreateProduct = [
+  body('name')
+    .notEmpty()
+    .withMessage('Product name is required')
+    .isLength({ min: 1, max: 200 })
+    .withMessage('Product name must be between 1 and 200 characters'),
+  
+  body('categoryId')
+    .isMongoId()
+    .withMessage('Valid category ID is required'),
+  
+  body('brandId')
+    .isMongoId()
+    .withMessage('Valid brand ID is required'),
+  
   body('productTypeId')
     .isMongoId()
     .withMessage('Valid product type ID is required'),
@@ -11,6 +25,7 @@ exports.validateCreateProduct = [
     .withMessage('Price must be a positive number'),
   
   body('condition')
+    .optional()
     .isIn(['new', 'like-new', 'used', 'refurbished'])
     .withMessage('Condition must be one of: new, like-new, used, refurbished'),
   
@@ -114,3 +129,4 @@ exports.validateDeleteProduct = [
     next();
   }
 ];
+

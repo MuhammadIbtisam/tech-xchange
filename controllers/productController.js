@@ -21,8 +21,6 @@ exports.getAllProducts = async (req, res) => {
     // Build filter object
     const filter = { status: 'approved' };
     
-    if (categoryId) filter.categoryId = categoryId;
-    if (brandId) filter.brandId = brandId;
     if (productTypeId) filter.productTypeId = productTypeId;
     if (condition) filter.condition = condition;
     if (minPrice || maxPrice) {
@@ -121,6 +119,7 @@ exports.getProduct = async (req, res) => {
 exports.createProduct = async (req, res) => {
   try {
     const {
+      name,
       productTypeId,
       price,
       currency = 'USD',
@@ -132,10 +131,10 @@ exports.createProduct = async (req, res) => {
     } = req.body;
 
 
-    if (!productTypeId || !price || !condition) {
+    if (!name || !price || !productTypeId) {
       return res.status(400).json({
         success: false,
-        message: 'Product type, price, and condition are required'
+        message: 'Missing required fields: name, price, productTypeId'
       });
     }
 
@@ -149,16 +148,17 @@ exports.createProduct = async (req, res) => {
     }
 
     const product = new Product({
+      name,
       sellerId: req.user.userId,
       productTypeId,
       price: Number(price),
       currency: currency.toUpperCase(),
-      condition,
-      description,
-      specifications,
+      condition: condition || 'new',
+      description: description || '',
+      specifications: specifications || {},
       stock: Number(stock) || 1,
-      tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
-      status: 'pending' // Goes to admin for approval
+      tags: tags ? (Array.isArray(tags) ? tags : tags.split(',').map(tag => tag.trim())) : [],
+      status: 'pending' // Goes to admin approval
     });
 
     await product.save();

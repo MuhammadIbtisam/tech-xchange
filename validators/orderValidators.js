@@ -6,7 +6,7 @@ exports.validateOrder = [
     .withMessage('Quantity must be at least 1'),
   
   body('paymentMethod')
-    .isIn(['credit_card', 'paypal', 'bank_transfer', 'cash_on_delivery'])
+    .isIn(['credit_card', 'card', 'paypal', 'bank_transfer', 'cash_on_delivery'])
     .withMessage('Invalid payment method'),
   
   body('shippingAddress.street')

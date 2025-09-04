@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const mongoose = require('mongoose'); // Added for database connection check
 
 // Utility to generate JWT
 const generateToken = (userId, role) => {
@@ -161,37 +162,124 @@ exports.getProfile = async (req, res) => {
 // Update user profile
 exports.updateProfile = async (req, res) => {
   try {
-    const { fullName, phoneNumber, address, preferences } = req.body;
+    console.log('=== PROFILE UPDATE DEBUG ===');
+    console.log('User ID:', req.user.userId);
+    console.log('Request Body:', req.body);
     
+    const { fullName, phoneNumber, address, preferences, email } = req.body;
+    
+    // Validate that at least one field is provided
+    if (!fullName && !phoneNumber && !address && !preferences && !email) {
+      return res.status(400).json({
+        success: false,
+        message: 'At least one field must be provided for update'
+      });
+    }
+
+    // Build update data object
     const updateData = {};
     if (fullName) updateData.fullName = fullName;
     if (phoneNumber) updateData.phoneNumber = phoneNumber;
     if (address) updateData.address = address;
     if (preferences) updateData.preferences = preferences;
+    if (email) updateData.email = email.toLowerCase();
 
-    const user = await User.findByIdAndUpdate(
-      req.user.userId,
-      updateData,
-      { new: true, runValidators: true }
-    ).select('-password');
+    console.log('Update Data:', updateData);
 
-    if (!user) {
-      return res.status(404).json({ 
+    // Check database connection
+    if (!mongoose.connection.readyState) {
+      console.error('Database not connected');
+      return res.status(500).json({
         success: false,
-        message: 'User not found.' 
+        message: 'Database connection lost'
       });
     }
 
-    res.json({ 
+    // Perform the update with proper options
+    const user = await User.findByIdAndUpdate(
+      req.user.userId,
+      updateData,
+      { 
+        new: true,           // Return updated document
+        runValidators: true, // Run schema validators
+        upsert: false        // Don't create if doesn't exist
+      }
+    ).select('-password');
+
+    if (!user) {
+      console.error('User not found after update attempt');
+      return res.status(404).json({
+        success: false,
+        message: 'User not found or update failed'
+      });
+    }
+
+    console.log('User updated successfully');
+    console.log('Updated User Data:', {
+      fullName: user.fullName,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      address: user.address
+    });
+
+    // Verify the update actually happened by fetching fresh data
+    const verification = await User.findById(req.user.userId).select('-password');
+    if (!verification) {
+      console.error('Verification failed - user not found');
+      throw new Error('Database update verification failed');
+    }
+
+    // Check if key fields were actually updated
+    let updateVerified = true;
+    if (fullName && verification.fullName !== fullName) {
+      console.error('FullName update verification failed:', {
+        expected: fullName,
+        actual: verification.fullName
+      });
+      updateVerified = false;
+    }
+    if (email && verification.email !== email.toLowerCase()) {
+      console.error('Email update verification failed:', {
+        expected: email.toLowerCase(),
+        actual: verification.email
+      });
+      updateVerified = false;
+    }
+    if (phoneNumber && verification.phoneNumber !== phoneNumber) {
+      console.error('PhoneNumber update verification failed:', {
+        expected: phoneNumber,
+        actual: verification.phoneNumber
+      });
+      updateVerified = false;
+    }
+
+    if (!updateVerified) {
+      console.error('Update verification failed');
+      throw new Error('Database update verification failed - changes not persisted');
+    }
+
+    console.log('Update verification successful');
+
+    res.json({
       success: true,
       message: 'Profile updated successfully',
-      user 
+      user: verification
     });
+
   } catch (err) {
     console.error('Update profile error:', err);
-    res.status(500).json({ 
+    
+    // Log detailed error information
+    console.error('Error details:', {
+      message: err.message,
+      stack: err.stack,
+      userId: req.user.userId,
+      requestBody: req.body
+    });
+    
+    res.status(500).json({
       success: false,
-      message: 'Server error while updating profile' 
+      message: 'Profile update failed: ' + err.message
     });
   }
 };

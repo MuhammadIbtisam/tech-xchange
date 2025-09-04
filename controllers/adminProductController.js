@@ -46,7 +46,7 @@ exports.getPendingProducts = async (req, res) => {
 // Approve product (admin only)
 exports.approveProduct = async (req, res) => {
   try {
-    const { adminNotes } = req.body;
+    const adminNotes = req.body?.adminNotes || '';
     
     const product = await Product.findByIdAndUpdate(
       req.params.id,
@@ -54,7 +54,7 @@ exports.approveProduct = async (req, res) => {
         status: 'approved',
         approvedBy: req.user.userId,
         approvedAt: new Date(),
-        adminNotes: adminNotes || ''
+        adminNotes
       },
       { new: true }
     )
@@ -92,7 +92,7 @@ exports.approveProduct = async (req, res) => {
 // Reject product (admin only)
 exports.rejectProduct = async (req, res) => {
   try {
-    const { adminNotes } = req.body;
+    const adminNotes = req.body?.adminNotes;
     
     if (!adminNotes) {
       return res.status(400).json({
