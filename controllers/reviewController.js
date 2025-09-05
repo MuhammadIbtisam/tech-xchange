@@ -91,7 +91,7 @@ exports.createReview = async (req, res) => {
   try {
     const { productId } = req.params;
     const { rating, comment } = req.body;
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     // Check if product exists and is approved
     const product = await Product.findById(productId);
@@ -149,7 +149,7 @@ exports.updateReview = async (req, res) => {
   try {
     const { reviewId } = req.params;
     const { rating, comment } = req.body;
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     const review = await Review.findById(reviewId);
     if (!review) {
@@ -190,7 +190,7 @@ exports.updateReview = async (req, res) => {
 exports.deleteReview = async (req, res) => {
   try {
     const { reviewId } = req.params;
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     const review = await Review.findById(reviewId);
     if (!review) {
@@ -226,7 +226,7 @@ exports.deleteReview = async (req, res) => {
 exports.markHelpful = async (req, res) => {
   try {
     const { reviewId } = req.params;
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     const review = await Review.findById(reviewId);
     if (!review) {
@@ -269,7 +269,7 @@ exports.markHelpful = async (req, res) => {
 // Get user's reviews
 exports.getUserReviews = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const { page = 1, limit = 10 } = req.query;
 
     const reviews = await Review.find({ userId })

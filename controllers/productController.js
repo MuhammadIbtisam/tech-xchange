@@ -122,7 +122,7 @@ exports.createProduct = async (req, res) => {
       name,
       productTypeId,
       price,
-      currency = 'USD',
+      currency = 'GBP',
       condition,
       description,
       specifications,
@@ -354,7 +354,8 @@ exports.uploadProductImages = async (req, res) => {
       });
     }
 
-    const imagePaths = req.files.map(file => file.path);
+    // Get relative paths for database storage
+    const imagePaths = req.files.map(file => file.path.replace(/\\/g, '/'));
     
     // Add new images to existing ones
     const updatedImages = [...product.images, ...imagePaths];

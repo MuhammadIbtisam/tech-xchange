@@ -28,7 +28,10 @@ const brands = [
   { name: 'Dell', description: 'Dell Technologies - American technology company', logo: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=200&h=200&fit=crop&crop=center' },
   { name: 'HP', description: 'Hewlett-Packard - American technology company', logo: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=200&h=200&fit=crop&crop=center' },
   { name: 'Sony', description: 'Sony Corporation - Japanese technology company', logo: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=200&h=200&fit=crop&crop=center' },
-  { name: 'Microsoft', description: 'Microsoft Corporation - American technology company', logo: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=200&h=200&fit=crop&crop=center' }
+  { name: 'Microsoft', description: 'Microsoft Corporation - American technology company', logo: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=200&h=200&fit=crop&crop=center' },
+  { name: 'Bose', description: 'Bose Corporation - American audio equipment company', logo: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&h=200&fit=crop&crop=center' },
+  { name: 'JBL', description: 'JBL - Professional audio equipment and speakers', logo: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&h=200&fit=crop&crop=center' },
+  { name: 'Logitech', description: 'Logitech International - Swiss computer peripherals company', logo: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&h=200&fit=crop&crop=center' }
 ];
 
 // Sample product images from Unsplash
@@ -397,6 +400,190 @@ async function seed() {
         categoryId: insertedCategories.find(c => c.name === 'tablets')._id,
         description: '2-in-1 tablet and laptop',
         specifications: { screen: '13"', ram: '16GB', storage: '256GB', processor: 'Intel i7' }
+      },
+      {
+        name: 'Surface Laptop 5',
+        brandId: insertedBrands.find(b => b.name === 'Microsoft')._id,
+        categoryId: insertedCategories.find(c => c.name === 'laptops')._id,
+        description: 'Premium laptop with touchscreen and all-day battery',
+        specifications: { screen: '13.5"', ram: '16GB', storage: '512GB', processor: 'Intel i7-1255U' }
+      },
+      {
+        name: 'Xbox Series X',
+        brandId: insertedBrands.find(b => b.name === 'Microsoft')._id,
+        categoryId: insertedCategories.find(c => c.name === 'gaming')._id,
+        description: 'Most powerful Xbox console with 4K gaming',
+        specifications: { storage: '1TB SSD', resolution: '4K', fps: '120fps', rayTracing: 'Yes' }
+      },
+
+      // Additional Apple Products
+      {
+        name: 'MacBook Pro 16"',
+        brandId: insertedBrands.find(b => b.name === 'Apple')._id,
+        categoryId: insertedCategories.find(c => c.name === 'laptops')._id,
+        description: 'Professional laptop with M3 Pro chip and Liquid Retina XDR display',
+        specifications: { screen: '16.2"', ram: '18GB', storage: '512GB', processor: 'M3 Pro' }
+      },
+      {
+        name: 'iPad Air 5th Gen',
+        brandId: insertedBrands.find(b => b.name === 'Apple')._id,
+        categoryId: insertedCategories.find(c => c.name === 'tablets')._id,
+        description: 'Powerful tablet with M1 chip and all-screen design',
+        specifications: { screen: '10.9"', ram: '8GB', storage: '256GB', processor: 'M1' }
+      },
+      {
+        name: 'AirPods Pro 2nd Gen',
+        brandId: insertedBrands.find(b => b.name === 'Apple')._id,
+        categoryId: insertedCategories.find(c => c.name === 'audio')._id,
+        description: 'Active noise cancellation with spatial audio',
+        specifications: { type: 'In-ear', connectivity: 'Bluetooth 5.3', battery: '6 hours', case: '24 hours' }
+      },
+
+      // Additional Samsung Products
+      {
+        name: 'Galaxy Z Fold 5',
+        brandId: insertedBrands.find(b => b.name === 'Samsung')._id,
+        categoryId: insertedCategories.find(c => c.name === 'phones')._id,
+        description: 'Foldable smartphone with large inner display',
+        specifications: { screen: '7.6" inner, 6.2" outer', ram: '12GB', storage: '512GB', camera: '50MP' }
+      },
+      {
+        name: 'Galaxy Book 3 Pro',
+        brandId: insertedBrands.find(b => b.name === 'Samsung')._id,
+        categoryId: insertedCategories.find(c => c.name === 'laptops')._id,
+        description: 'Premium laptop with AMOLED display and S Pen support',
+        specifications: { screen: '16"', ram: '32GB', storage: '1TB', processor: 'Intel i7-13700H' }
+      },
+      {
+        name: 'Galaxy Buds2 Pro',
+        brandId: insertedBrands.find(b => b.name === 'Samsung')._id,
+        categoryId: insertedCategories.find(c => c.name === 'audio')._id,
+        description: 'Premium wireless earbuds with active noise cancellation',
+        specifications: { type: 'In-ear', connectivity: 'Bluetooth 5.3', battery: '5 hours', case: '18 hours' }
+      },
+
+      // Additional Lenovo Products
+      {
+        name: 'Legion Pro 7i',
+        brandId: insertedBrands.find(b => b.name === 'Lenovo')._id,
+        categoryId: insertedCategories.find(c => c.name === 'laptops')._id,
+        description: 'Gaming laptop with RTX 4080 and high refresh rate display',
+        specifications: { screen: '16"', ram: '32GB', storage: '1TB', processor: 'Intel i9-13900HX', gpu: 'RTX 4080' }
+      },
+      {
+        name: 'IdeaPad Flex 5',
+        brandId: insertedBrands.find(b => b.name === 'Lenovo')._id,
+        categoryId: insertedCategories.find(c => c.name === 'laptops')._id,
+        description: '2-in-1 laptop with touchscreen and 360-degree hinge',
+        specifications: { screen: '14"', ram: '16GB', storage: '512GB', processor: 'AMD Ryzen 7 7730U' }
+      },
+
+      // Additional Dell Products
+      {
+        name: 'Alienware m18',
+        brandId: insertedBrands.find(b => b.name === 'Dell')._id,
+        categoryId: insertedCategories.find(c => c.name === 'laptops')._id,
+        description: 'Gaming laptop with RTX 4090 and mechanical keyboard',
+        specifications: { screen: '18"', ram: '64GB', storage: '2TB', processor: 'Intel i9-13900HX', gpu: 'RTX 4090' }
+      },
+      {
+        name: 'Inspiron 15 3000',
+        brandId: insertedBrands.find(b => b.name === 'Dell')._id,
+        categoryId: insertedCategories.find(c => c.name === 'laptops')._id,
+        description: 'Budget-friendly laptop for everyday computing',
+        specifications: { screen: '15.6"', ram: '8GB', storage: '256GB', processor: 'Intel i5-1235U' }
+      },
+
+      // Additional HP Products
+      {
+        name: 'Pavilion Plus 14',
+        brandId: insertedBrands.find(b => b.name === 'HP')._id,
+        categoryId: insertedCategories.find(c => c.name === 'laptops')._id,
+        description: 'Student laptop with OLED display and long battery life',
+        specifications: { screen: '14"', ram: '16GB', storage: '512GB', processor: 'AMD Ryzen 7 7730U' }
+      },
+      {
+        name: 'Omen 17',
+        brandId: insertedBrands.find(b => b.name === 'HP')._id,
+        categoryId: insertedCategories.find(c => c.name === 'laptops')._id,
+        description: 'Gaming laptop with high refresh rate and RGB lighting',
+        specifications: { screen: '17.3"', ram: '32GB', storage: '1TB', processor: 'Intel i7-13700HX', gpu: 'RTX 4070' }
+      },
+
+      // Additional Sony Products
+      {
+        name: 'WF-1000XM5',
+        brandId: insertedBrands.find(b => b.name === 'Sony')._id,
+        categoryId: insertedCategories.find(c => c.name === 'audio')._id,
+        description: 'Premium wireless earbuds with industry-leading noise cancellation',
+        specifications: { type: 'In-ear', connectivity: 'Bluetooth 5.3', battery: '8 hours', case: '24 hours' }
+      },
+      {
+        name: 'PlayStation 5 Digital Edition',
+        brandId: insertedBrands.find(b => b.name === 'Sony')._id,
+        categoryId: insertedCategories.find(c => c.name === 'gaming')._id,
+        description: 'Digital-only version of the PlayStation 5 console',
+        specifications: { storage: '825GB SSD', resolution: '4K', fps: '120fps', discDrive: 'No' }
+      },
+      {
+        name: 'DualSense Controller',
+        brandId: insertedBrands.find(b => b.name === 'Sony')._id,
+        categoryId: insertedCategories.find(c => c.name === 'gaming')._id,
+        description: 'Wireless controller with haptic feedback and adaptive triggers',
+        specifications: { connectivity: 'Bluetooth', battery: '12 hours', features: 'Haptic feedback, adaptive triggers' }
+      },
+
+      // Accessories
+      {
+        name: 'Magic Keyboard for iPad Pro',
+        brandId: insertedBrands.find(b => b.name === 'Apple')._id,
+        categoryId: insertedCategories.find(c => c.name === 'accessories')._id,
+        description: 'Backlit keyboard with trackpad for iPad Pro',
+        specifications: { compatibility: 'iPad Pro 11" and 12.9"', connectivity: 'Smart Connector', backlight: 'Yes' }
+      },
+      {
+        name: 'Apple Pencil 2nd Gen',
+        brandId: insertedBrands.find(b => b.name === 'Apple')._id,
+        categoryId: insertedCategories.find(c => c.name === 'accessories')._id,
+        description: 'Precision stylus for iPad with pressure sensitivity',
+        specifications: { compatibility: 'iPad Pro, iPad Air', pressure: '4096 levels', charging: 'Magnetic' }
+      },
+      {
+        name: 'Samsung Galaxy Watch 6 Classic',
+        brandId: insertedBrands.find(b => b.name === 'Samsung')._id,
+        categoryId: insertedCategories.find(c => c.name === 'accessories')._id,
+        description: 'Premium smartwatch with rotating bezel and health tracking',
+        specifications: { screen: '1.5"', battery: '2 days', features: 'ECG, Blood pressure, Sleep tracking' }
+      },
+      {
+        name: 'Dell USB-C Hub',
+        brandId: insertedBrands.find(b => b.name === 'Dell')._id,
+        categoryId: insertedCategories.find(c => c.name === 'accessories')._id,
+        description: '7-in-1 USB-C hub with HDMI, USB ports, and SD card reader',
+        specifications: { ports: 'HDMI, USB 3.0, USB-C, SD/TF card', power: '100W PD', compatibility: 'Universal' }
+      },
+      {
+        name: 'Logitech MX Master 3S',
+        brandId: insertedBrands.find(b => b.name === 'Logitech')._id,
+        categoryId: insertedCategories.find(c => c.name === 'accessories')._id,
+        description: 'Premium wireless mouse with precision scrolling',
+        specifications: { connectivity: 'Bluetooth, USB receiver', battery: '70 days', dpi: '8000' }
+      },
+
+      // Audio Products
+      {
+        name: 'Bose QuietComfort 45',
+        brandId: insertedBrands.find(b => b.name === 'Bose')._id,
+        categoryId: insertedCategories.find(c => c.name === 'audio')._id,
+        description: 'Premium noise-canceling headphones with 24-hour battery',
+        specifications: { type: 'Over-ear', connectivity: 'Bluetooth 5.1', battery: '24 hours', noiseCanceling: 'Yes' }
+      },
+      {
+        name: 'JBL Charge 5',
+        brandId: insertedBrands.find(b => b.name === 'JBL')._id,
+        categoryId: insertedCategories.find(c => c.name === 'audio')._id,
+        description: 'Portable Bluetooth speaker with waterproof design',
+        specifications: { type: 'Portable speaker', connectivity: 'Bluetooth 5.1', battery: '20 hours', waterproof: 'IP67' }
       }
     ];
 

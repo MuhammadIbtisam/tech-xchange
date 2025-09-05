@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const path = require('path');
 
 dotenv.config();
 
@@ -18,6 +19,19 @@ app.use(express.json());
 
 // Serve static files from uploads directory
 app.use('/uploads', express.static('uploads'));
+
+// Debug: Log static file serving
+app.use('/uploads', (req, res, next) => {
+  console.log('📁 Static file request:', req.path);
+  next();
+});
+
+// Test endpoint for image serving
+app.get('/test-image/:filename', (req, res) => {
+  const filename = req.params.filename;
+  console.log('🧪 Testing image:', filename);
+  res.sendFile(path.join(__dirname, 'uploads', 'products', filename));
+});
 
 // Mount all API routes
 app.use('/api', require('./routes'));

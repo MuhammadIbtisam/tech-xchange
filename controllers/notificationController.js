@@ -3,7 +3,7 @@ const Notification = require('../models/Notification');
 // Get user's notifications
 exports.getNotifications = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.userId;
     const { page = 1, limit = 20, unreadOnly = false } = req.query;
 
     const query = { userId };
@@ -48,7 +48,7 @@ exports.getNotifications = async (req, res) => {
 exports.markAsRead = async (req, res) => {
   try {
     const { notificationId } = req.params;
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     const notification = await Notification.findById(notificationId);
     if (!notification) {
@@ -85,7 +85,7 @@ exports.markAsRead = async (req, res) => {
 // Mark all notifications as read
 exports.markAllAsRead = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     await Notification.updateMany(
       { userId, isRead: false },
@@ -109,7 +109,7 @@ exports.markAllAsRead = async (req, res) => {
 exports.deleteNotification = async (req, res) => {
   try {
     const { notificationId } = req.params;
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     const notification = await Notification.findById(notificationId);
     if (!notification) {
@@ -144,7 +144,7 @@ exports.deleteNotification = async (req, res) => {
 // Delete all notifications
 exports.deleteAllNotifications = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     await Notification.deleteMany({ userId });
 
@@ -164,7 +164,7 @@ exports.deleteAllNotifications = async (req, res) => {
 // Get notification count
 exports.getNotificationCount = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     const unreadCount = await Notification.countDocuments({ userId, isRead: false });
     const totalCount = await Notification.countDocuments({ userId });
